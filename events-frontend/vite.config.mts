@@ -17,6 +17,9 @@ export default defineConfig(() => ({
       },
     },
   },
+  define: {
+    global: 'globalThis',
+  },
   preview: {
     port: 4200,
     host: 'localhost',

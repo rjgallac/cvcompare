@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import Stomp from 'stompjs';
+import SockJS from 'sockjs-client';
 
 // Uncomment this line to use CSS modules
 // import styles from './app.module.css';
@@ -26,9 +28,53 @@ export function App() {
   const [message, setMessage] = useState('');
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [wsConnected, setWsConnected] = useState(false);
 
   useEffect(() => {
     fetchProducts();
+  }, []);
+
+  useEffect(() => {
+    let stompClient: any = null;
+
+    const connectWebSocket = () => {
+      try {
+        const socket = new SockJS('http://localhost:8080/ws');
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect(
+          {},
+          () => {
+            setWsConnected(true);
+            console.log('WebSocket connected');
+
+            stompClient.subscribe('/topic/status', (message: any) => {
+              const statusMessage = JSON.parse(message.body);
+              console.log('Received WebSocket message:', statusMessage);
+            });
+          },
+          (error: any) => {
+            console.error('WebSocket connection failed:', error);
+            setWsConnected(false);
+          },
+        );
+      } catch (err) {
+        console.error('Error creating WebSocket:', err);
+        setWsConnected(false);
+      }
+    };
+
+    connectWebSocket();
+
+    return () => {
+      if (stompClient && stompClient.disconnect) {
+        try {
+          stompClient.disconnect(() => {});
+        } catch (err) {
+          console.error('Error disconnecting WebSocket:', err);
+        }
+      }
+    };
   }, []);
 
   const fetchProducts = async () => {
@@ -85,6 +131,16 @@ export function App() {
 
   return (
     <div>
+      <div style={{ marginBottom: '20px' }}>
+        <span
+          style={{
+            color: wsConnected ? 'green' : 'red',
+            fontWeight: 'bold',
+          }}
+        >
+          WebSocket: {wsConnected ? 'Connected' : 'Disconnected'}
+        </span>
+      </div>
       <h2>Product List</h2>
       {loading ? (
         <p>Loading products...</p>
