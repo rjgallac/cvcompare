@@ -7,7 +7,9 @@ import com.example.backend1.model.Product;
 import com.example.backend1.model.ProductDto;
 import com.example.backend1.model.ProductMessage;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -31,8 +33,8 @@ public class TestController {
     Logger logger = Logger.getLogger(TestController.class.getName());
 
     @GetMapping("/getProducts")
-    public String getProducts() {
-        return productMap.values().toString();
+    public List<Product> getProducts() {
+        return new ArrayList<>(productMap.values());
     }
 
 
