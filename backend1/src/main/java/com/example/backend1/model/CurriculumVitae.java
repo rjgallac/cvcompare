@@ -1,0 +1,34 @@
+package com.example.backend1.model;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "curriculum_vitae")
+public class CurriculumVitae {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String curriculum_vitae_content;
+
+    
+    // Getters and setters
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
+    public String getCurriculum_vitae_content() {
+        return curriculum_vitae_content;
+    }
+    public void setCurriculum_vitae_content(String curriculum_vitae_content) {
+        this.curriculum_vitae_content = curriculum_vitae_content;
+    }
+    
+}   
