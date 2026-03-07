@@ -1,210 +1,70 @@
 import React, { useState, useEffect } from 'react';
-import Stomp from 'stompjs';
-import SockJS from 'sockjs-client';
 
-// Uncomment this line to use CSS modules
-// import styles from './app.module.css';
-
-interface ProductFormData {
+interface CvStatus {
   id: string;
-  name: string;
-  price: number | string;
-}
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
   status: string;
 }
 
+interface Cv {
+  id: number;
+  name: string;
+  curriculum_vitae_content: string;
+}
+
+interface JobSpec {
+  cvId: number | null;
+  id: number;
+  job_spec_content: string;
+  location: string | null;
+  salary: number | null;
+  score: number | null;
+}
+
 export function App() {
-  const [formData, setFormData] = useState<ProductFormData>({
-    id: '',
-    name: '',
-    price: '',
-  });
+  const [name, setName] = useState('');
   const [cvContent, setCvContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState('');
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [wsConnected, setWsConnected] = useState(false);
-  const [pendingProductIds, setPendingProductIds] = useState<Set<string>>(
-    new Set(),
-  );
+  const [cvs, setCvs] = useState<Cv[]>([]);
+
+  const [jobSpecContent, setJobSpecContent] = useState('');
+  const [selectedCvId, setSelectedCvId] = useState<number | ''>('');
+  const [isSubmittingJobSpec, setIsSubmittingJobSpec] = useState(false);
+  const [message2, setMessage2] = useState('');
+  const [jobSpecs, setJobSpecs] = useState<JobSpec[]>([]);
 
   useEffect(() => {
-    fetchProducts();
+    fetchCvs();
+    fetchJobSpecs();
   }, []);
 
-  useEffect(() => {
-    let stompClient: any = null;
-
-    const connectWebSocket = () => {
-      try {
-        const socket = new SockJS('http://localhost:8080/ws');
-        stompClient = Stomp.over(socket);
-
-        stompClient.connect(
-          {},
-          () => {
-            setWsConnected(true);
-            console.log('WebSocket connected');
-
-            stompClient.subscribe('/topic/status', (message: any) => {
-              const statusMessage = JSON.parse(message.body);
-              console.log('Received WebSocket message:', statusMessage);
-
-              setPendingProductIds((prev) => {
-                const updated = new Set(prev);
-                updated.delete(statusMessage.id);
-                return updated;
-              });
-
-              setProducts((prevProducts) => {
-                const existingIndex = prevProducts.findIndex(
-                  (p) => p.id === statusMessage.id,
-                );
-                if (existingIndex >= 0) {
-                  const updated = [...prevProducts];
-                  updated[existingIndex] = {
-                    ...updated[existingIndex],
-                    status: statusMessage.status,
-                  };
-                  return updated;
-                } else {
-                  return [
-                    ...prevProducts,
-                    {
-                      id: statusMessage.id,
-                      name: '',
-                      price: 0,
-                      status: statusMessage.status,
-                    },
-                  ];
-                }
-              });
-            });
-          },
-          (error: any) => {
-            console.error('WebSocket connection failed:', error);
-            setWsConnected(false);
-          },
-        );
-      } catch (err) {
-        console.error('Error creating WebSocket:', err);
-        setWsConnected(false);
-      }
-    };
-
-    connectWebSocket();
-
-    return () => {
-      if (stompClient && stompClient.disconnect) {
-        try {
-          stompClient.disconnect(() => {});
-        } catch (err) {
-          console.error('Error disconnecting WebSocket:', err);
-        }
-      }
-    };
-  }, []);
-
-  const fetchProducts = async () => {
+  const fetchCvs = async () => {
     try {
-      const response = await fetch('/api/test/getProducts');
+      const response = await fetch('/api/cv');
       if (response.ok) {
         const data = await response.json();
-        setProducts(data);
+        setCvs(data);
       }
     } catch (error) {
-      console.error('Error fetching products:', error);
-    } finally {
-      setLoading(false);
+      console.error('Error fetching CVs:', error);
     }
   };
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
+  const fetchJobSpecs = async () => {
+    try {
+      const response = await fetch('/api/jobspec');
+      if (response.ok) {
+        const data = await response.json();
+        setJobSpecs(data);
+      }
+    } catch (error) {
+      console.error('Error fetching job specs:', error);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setMessage('');
-
-    if (cvContent) {
-      try {
-        const response = await fetch('/api/cv', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ curriculum_vitae_content: cvContent }),
-        });
-
-        if (response.ok) {
-          setMessage('CV submitted successfully!');
-          setCvContent('');
-        } else {
-          setMessage('Failed to submit CV');
-        }
-      } catch (error) {
-        setMessage('Error connecting to backend');
-      } finally {
-        setIsSubmitting(false);
-      }
-      return;
-    }
-
-    const newProduct: Product = {
-      id: formData.id,
-      name: formData.name,
-      price: Number(formData.price),
-      status: 'Pending',
-    };
-
-    setProducts((prev) => [...prev, newProduct]);
-    setPendingProductIds((prev) => new Set(prev).add(formData.id));
-    setFormData({ id: '', name: '', price: '' });
-
-    try {
-      const response = await fetch('/api/test/addProduct', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        setMessage('Product added successfully!');
-      } else {
-        setMessage('Failed to add product');
-        setProducts((prev) => prev.filter((p) => p.id !== formData.id));
-        setPendingProductIds((prev) => {
-          const updated = new Set(prev);
-          updated.delete(formData.id);
-          return updated;
-        });
-      }
-    } catch (error) {
-      setMessage('Error connecting to backend');
-      setProducts((prev) => prev.filter((p) => p.id !== formData.id));
-      setPendingProductIds((prev) => {
-        const updated = new Set(prev);
-        updated.delete(formData.id);
-        return updated;
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleCvSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!cvContent.trim()) return;
+    if (!name.trim() || !cvContent.trim()) return;
 
     setIsSubmitting(true);
     setMessage('');
@@ -215,12 +75,14 @@ export function App() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ curriculum_vitae_content: cvContent }),
+        body: JSON.stringify({ name, curriculum_vitae_content: cvContent }),
       });
 
       if (response.ok) {
         setMessage('CV submitted successfully!');
+        setName('');
         setCvContent('');
+        fetchCvs();
       } else {
         setMessage('Failed to submit CV');
       }
@@ -231,38 +93,112 @@ export function App() {
     }
   };
 
-  const handleCvChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setCvContent(e.target.value);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+  const handleSubmitJobSpec = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!jobSpecContent.trim()) return;
+
+    setIsSubmittingJobSpec(true);
+    setMessage2('');
+
+    try {
+      const response = await fetch('/api/jobspec', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          cvId: selectedCvId === '' ? null : Number(selectedCvId),
+          job_spec_content: jobSpecContent,
+        }),
+      });
+
+      if (response.ok) {
+        setMessage2('Job spec submitted successfully!');
+        setJobSpecContent('');
+        setSelectedCvId('');
+        fetchJobSpecs();
+      } else {
+        setMessage2('Failed to submit job spec');
+      }
+    } catch (error) {
+      setMessage2('Error connecting to backend');
+    } finally {
+      setIsSubmittingJobSpec(false);
+    }
+  };
+
+  const handleJobSpecContentChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>,
+  ) => {
+    setJobSpecContent(e.target.value);
+  };
+
+  const handleCvIdChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCvId(e.target.value === '' ? '' : Number(e.target.value));
   };
 
   return (
     <div>
-      <div style={{ marginBottom: '20px' }}>
-        <span
+      <h1>Add CV</h1>
+      <form onSubmit={handleSubmit}>
+        <div style={{ marginBottom: '10px' }}>
+          <label htmlFor="name">Name:</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value={name}
+            onChange={handleNameChange}
+            required
+            style={{ marginLeft: '10px', padding: '5px' }}
+          />
+        </div>
+        <div style={{ marginBottom: '10px' }}>
+          <label htmlFor="curriculum_vitae_content">
+            Curriculum Vitae Content:
+          </label>
+          <textarea
+            id="curriculum_vitae_content"
+            name="curriculum_vitae_content"
+            value={cvContent}
+            onChange={handleChange}
+            required
+            rows={5}
+            style={{ marginLeft: '10px', padding: '5px', width: '300px' }}
+          />
+        </div>
+        <button type="submit" disabled={isSubmitting || !cvContent.trim()}>
+          {isSubmitting ? 'Submitting...' : 'Submit CV'}
+        </button>
+      </form>
+      {message && (
+        <p
           style={{
-            color: wsConnected ? 'green' : 'red',
-            fontWeight: 'bold',
+            color: message.includes('success') ? 'green' : 'red',
+            marginTop: '20px',
           }}
         >
-          WebSocket: {wsConnected ? 'Connected' : 'Disconnected'}
-        </span>
-      </div>
-      <h2>Product List</h2>
-      {loading ? (
-        <p>Loading products...</p>
+          {message}
+        </p>
+      )}
+
+      <h1 style={{ marginTop: '40px' }}>CV List</h1>
+      {cvs.length === 0 ? (
+        <p>No CVs submitted yet.</p>
       ) : (
         <table
           style={{
             width: '100%',
             borderCollapse: 'collapse',
-            marginBottom: '20px',
+            marginTop: '20px',
           }}
         >
           <thead>
@@ -292,7 +228,96 @@ export function App() {
                   textAlign: 'left',
                 }}
               >
-                Price
+                CV Content
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {cvs.map((cv) => (
+              <tr key={cv.id}>
+                <td style={{ border: '1px solid #ddd', padding: '8px' }}>
+                  {cv.id}
+                </td>
+                <td style={{ border: '1px solid #ddd', padding: '8px' }}>
+                  {cv.name}
+                </td>
+                <td style={{ border: '1px solid #ddd', padding: '8px' }}>
+                  {cv.curriculum_vitae_content}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+
+      <h1 style={{ marginTop: '40px' }}>Add Job Spec</h1>
+      <form onSubmit={handleSubmitJobSpec}>
+        <div style={{ marginBottom: '10px' }}>
+          <label htmlFor="cvId">CV:</label>
+          <select
+            id="cvId"
+            name="cvId"
+            value={selectedCvId}
+            onChange={handleCvIdChange}
+            required
+            style={{ marginLeft: '10px', padding: '5px' }}
+          >
+            <option value="">Select a CV</option>
+            {cvs.map((cv) => (
+              <option key={cv.id} value={cv.id}>
+                {cv.name} ({cv.id})
+              </option>
+            ))}
+          </select>
+        </div>
+        <div style={{ marginBottom: '10px' }}>
+          <label htmlFor="job_spec_content">Job Spec Content:</label>
+          <textarea
+            id="job_spec_content"
+            name="job_spec_content"
+            value={jobSpecContent}
+            onChange={handleJobSpecContentChange}
+            required
+            rows={5}
+            style={{ marginLeft: '10px', padding: '5px', width: '300px' }}
+          />
+        </div>
+        <button type="submit" disabled={isSubmittingJobSpec}>
+          {isSubmittingJobSpec ? 'Adding...' : 'Add Job Spec'}
+        </button>
+      </form>
+      {message2 && (
+        <p
+          style={{
+            color: message2.includes('success') ? 'green' : 'red',
+            marginTop: '10px',
+          }}
+        >
+          {message2}
+        </p>
+      )}
+
+      <h1 style={{ marginTop: '40px' }}>Job Spec List</h1>
+      {jobSpecs.length === 0 ? (
+        <p>No job specs submitted yet.</p>
+      ) : (
+        <table
+          style={{
+            width: '100%',
+            borderCollapse: 'collapse',
+            marginTop: '20px',
+          }}
+        >
+          <thead>
+            <tr style={{ backgroundColor: '#f5f5f5' }}>
+              <th
+                style={{
+                  border: '1px solid #ddd',
+                  padding: '8px',
+                  textAlign: 'left',
+                }}
+              >
+                ID
               </th>
               <th
                 style={{
@@ -301,110 +326,71 @@ export function App() {
                   textAlign: 'left',
                 }}
               >
-                Status
+                CV ID
+              </th>
+              <th
+                style={{
+                  border: '1px solid #ddd',
+                  padding: '8px',
+                  textAlign: 'left',
+                }}
+              >
+                Job Spec Content
+              </th>
+              <th
+                style={{
+                  border: '1px solid #ddd',
+                  padding: '8px',
+                  textAlign: 'left',
+                }}
+              >
+                Location
+              </th>
+              <th
+                style={{
+                  border: '1px solid #ddd',
+                  padding: '8px',
+                  textAlign: 'left',
+                }}
+              >
+                Salary
+              </th>
+              <th
+                style={{
+                  border: '1px solid #ddd',
+                  padding: '8px',
+                  textAlign: 'left',
+                }}
+              >
+                Score
               </th>
             </tr>
           </thead>
           <tbody>
-            {products.map((product) => (
-              <tr
-                key={product.id}
-                style={{
-                  backgroundColor: pendingProductIds.has(product.id)
-                    ? '#fff3cd'
-                    : 'transparent',
-                }}
-              >
+            {jobSpecs.map((js) => (
+              <tr key={js.id}>
                 <td style={{ border: '1px solid #ddd', padding: '8px' }}>
-                  {product.id}
+                  {js.id}
                 </td>
                 <td style={{ border: '1px solid #ddd', padding: '8px' }}>
-                  {product.name}
+                  {js.cvId ?? '-'}
                 </td>
                 <td style={{ border: '1px solid #ddd', padding: '8px' }}>
-                  ${Number(product.price).toFixed(2)}
+                  {js.job_spec_content}
                 </td>
                 <td style={{ border: '1px solid #ddd', padding: '8px' }}>
-                  {pendingProductIds.has(product.id) ? (
-                    <span style={{ color: 'blue' }}>Processing...</span>
-                  ) : (
-                    product.status
-                  )}
+                  {js.location ?? '-'}
+                </td>
+                <td style={{ border: '1px solid #ddd', padding: '8px' }}>
+                  {js.salary != null ? `$${js.salary}` : '-'}
+                </td>
+                <td style={{ border: '1px solid #ddd', padding: '8px' }}>
+                  {js.score ?? '-'}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-      )}
-      <h1>Add Product</h1>
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '10px' }}>
-          <label htmlFor="id">ID:</label>
-          <input
-            type="text"
-            id="id"
-            name="id"
-            value={formData.id}
-            onChange={handleChange}
-            required
-            style={{ marginLeft: '10px', padding: '5px' }}
-          />
-        </div>
-        <div style={{ marginBottom: '10px' }}>
-          <label htmlFor="name">Name:</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            style={{ marginLeft: '10px', padding: '5px' }}
-          />
-        </div>
-        <div style={{ marginBottom: '10px' }}>
-          <label htmlFor="price">Price:</label>
-          <input
-            type="number"
-            id="price"
-            name="price"
-            value={formData.price}
-            onChange={handleChange}
-            required
-            step="0.01"
-            style={{ marginLeft: '10px', padding: '5px' }}
-          />
-        </div>
-        <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Adding...' : 'Add Product'}
-        </button>
-      </form>
-
-      <h1>Add CV</h1>
-      <form onSubmit={handleCvSubmit}>
-        <div style={{ marginBottom: '10px' }}>
-          <label htmlFor="curriculum_vitae_content">
-            Curriculum Vitae Content:
-          </label>
-          <textarea
-            id="curriculum_vitae_content"
-            name="curriculum_vitae_content"
-            value={cvContent}
-            onChange={handleCvChange}
-            required
-            rows={5}
-            style={{ marginLeft: '10px', padding: '5px', width: '300px' }}
-          />
-        </div>
-        <button type="submit" disabled={isSubmitting || !cvContent.trim()}>
-          {isSubmitting ? 'Submitting...' : 'Submit CV'}
-        </button>
-      </form>
-
-      {message && (
-        <p style={{ color: message.includes('success') ? 'green' : 'red' }}>
-          {message}
-        </p>
       )}
     </div>
   );

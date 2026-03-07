@@ -32,7 +32,7 @@ public class JobSpecController {
         this.jobSpecMapper = jobSpecMapper;
     }
 
-    @GetMapping("/getJobSpecs")
+    @GetMapping
     public List<JobSpecDto> getProducts() {
         List<JobSpec> jobSpecs = jobSpecService.getJobSpecs();
         return jobSpecs.stream().map(jobSpecMapper::toDto).collect(java.util.stream.Collectors.toList());
