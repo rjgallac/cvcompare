@@ -40,7 +40,7 @@ public class JobSpecService {
 
         CvCompareMessage cvCompareMessage = new CvCompareMessage();
         cvCompareMessage.setJobSpecId(savedJobSpec.getId());
-        cvCompareMessage.setJobSpecContent(savedJobSpec.getJob_spec_content());
+        cvCompareMessage.setJobSpecContent(savedJobSpec.getJobSpecContent());
         cvCompareMessage.setCvContent(cv.getCurriculum_vitae_content());
 
         // send CV and JobSpec to RabbitMQ

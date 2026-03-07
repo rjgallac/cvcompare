@@ -31,6 +31,9 @@ public class StatusConsumer {
         JobSpec jobSpec = jobSpecRepository.findById(message.getJobSpecId()).get();
         jobSpec.setScore(String.valueOf(message.getScore()));
         jobSpec.setLocation(message.getLocation().substring(0, Math.min(200, message.getLocation().length())));
+        jobSpec.setJobTitle(message.getTitle().substring(0, Math.min(200, message.getTitle().length())));
+        jobSpec.setCompany(message.getCompany().substring(0, Math.min(200, message  .getCompany().length())));
+        jobSpec.setSalary(message.getSalary());
         jobSpecRepository.save(jobSpec);
         messagingTemplate.convertAndSend("/topic/status", message);
     }

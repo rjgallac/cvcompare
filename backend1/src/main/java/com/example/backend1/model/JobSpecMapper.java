@@ -9,7 +9,7 @@ public class JobSpecMapper {
         JobSpec jobSpec = new JobSpec();
         jobSpec.setId(jobSpecDto.getId());
         jobSpec.setCvId(jobSpecDto.getCvId());
-        jobSpec.setJob_spec_content(jobSpecDto.getJob_spec_content());
+        jobSpec.setJobSpecContent(jobSpecDto.getJob_spec_content());
         jobSpec.setLocation(jobSpecDto.getLocation());
         jobSpec.setSalary(jobSpecDto.getSalary());
         jobSpec.setScore(jobSpecDto.getScore());
@@ -19,7 +19,7 @@ public class JobSpecMapper {
     public JobSpecDto toDto(JobSpec jobSpec) {
         JobSpecDto jobSpecDto = new JobSpecDto();
         jobSpecDto.setId(jobSpec.getId());
-        jobSpecDto.setJob_spec_content(jobSpec.getJob_spec_content());
+        jobSpecDto.setJob_spec_content(jobSpec.getJobSpecContent());
         jobSpecDto.setLocation(jobSpec.getLocation());
         jobSpecDto.setSalary(jobSpec.getSalary());
         jobSpecDto.setScore(jobSpec.getScore());

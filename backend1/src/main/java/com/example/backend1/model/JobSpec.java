@@ -14,10 +14,10 @@ public class JobSpec {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String job_title;
+    private String jobTitle;
 
     @Column(columnDefinition="TEXT")
-    private String job_spec_content;
+    private String jobSpecContent;
 
     private String location;
 
@@ -34,17 +34,18 @@ public class JobSpec {
     public void setId(Long id) {
         this.id = id;
     }
-    public String getJob_title() {
-        return job_title;
+    public String getJobTitle() {
+        return jobTitle;
     }
-    public void setJob_title(String job_title) {
-        this.job_title = job_title;
+    public void setJobTitle(String jobTitle) {
+        this.jobTitle = jobTitle;
     }
-    public String getJob_spec_content() {
-        return job_spec_content;
+    @Column(columnDefinition="TEXT")
+    public String getJobSpecContent() {
+        return jobSpecContent;
     }
-    public void setJob_spec_content(String job_spec_content) {
-        this.job_spec_content = job_spec_content;
+    public void setJobSpecContent(String jobSpecContent) {
+        this.jobSpecContent = jobSpecContent;
     }
     public String getLocation() {
         return location;
@@ -71,6 +72,10 @@ public class JobSpec {
 
     public void setCvId(Long cvId) {
         this.cvId = cvId;
+    }
+    public void setCompany(String substring) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setCompany'");
     }
 
 

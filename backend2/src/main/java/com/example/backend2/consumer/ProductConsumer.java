@@ -44,12 +44,12 @@ public class ProductConsumer {
         sb.append("Compare the following CV content with the job description and provide a score from 0 to 100, where 100 means a perfect match.");
         sb.append("CV Content: " + message.getCvContent());
         sb.append("Job Description: " + message.getJobSpecContent());
-        sb.append("Can you extract score, the company name, salary, title and location and provide them in a JSON format like this:");
+        sb.append("Can you extract score, the company name, salary in GBP £ if possible or put 0/None if you cant find it, job title(position) or put none if you can't find it and location(or put none if you cant find it) and provide them in a JSON format like this:");
         
-        sb.append("{\"score\": 85, \"company\": \"Tech Company\", \"salary\": \"100k-120k\", \"title\": \"Software Engineer\", \"location\": \"San Francisco\"}");
+        sb.append("{\"score\": 85, \"company\": \"Tech Company\", \"salary\": \"£40-£50k\", \"title\": \"Software Engineer\", \"location\": \"Sheffield, UK\"}");
         sb.append("Only provide the JSON response without any additional text.If you cannot extract any of the fields, please set them to null or 0 for score.");
         sb.append("if you respond with anything other than json the program will break. Only JSON should be returned nothing else, no other text should be returned.");
-        sb.append("If you cannot extract any of the fields, please set them to null or 0 for score.");
+        sb.append("If you cannot extract any of the fields, please set them to NONE/NA or 0 for score.");
         // OpenAiChatOptions options = OpenAiChatOptions.builder()
         //         .model("qwen3.5-9b")
         //         // .outputSchema("AiResponse")
