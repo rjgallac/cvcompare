@@ -43,7 +43,7 @@ public class JobSpecService {
         cvCompareMessage.setCvContent(cv.getCurriculum_vitae_content());
 
         // send CV and JobSpec to RabbitMQ
-        // rabbitTemplate.convertAndSend("queue-name", productMessage);
+        rabbitTemplate.convertAndSend("queue-name", cvCompareMessage);
         // logger.info("Product added: " + product.getName() + " with price: " + product.getPrice() + " and status: " + product.getStatus());
 
     }
