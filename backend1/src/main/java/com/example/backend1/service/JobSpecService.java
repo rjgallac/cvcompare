@@ -35,11 +35,12 @@ public class JobSpecService {
         // get cv from database
         CurriculumVitae cv = cvRepository.findById(jobSpec.getCvId()).orElse(null);
         // save the job spec in the database
-        jobSpecRepository.save(jobSpec);
+        JobSpec savedJobSpec = jobSpecRepository.save(jobSpec);
 
 
         CvCompareMessage cvCompareMessage = new CvCompareMessage();
-        cvCompareMessage.setJobSpecContent(jobSpec.getJob_spec_content());
+        cvCompareMessage.setJobSpecId(savedJobSpec.getId());
+        cvCompareMessage.setJobSpecContent(savedJobSpec.getJob_spec_content());
         cvCompareMessage.setCvContent(cv.getCurriculum_vitae_content());
 
         // send CV and JobSpec to RabbitMQ

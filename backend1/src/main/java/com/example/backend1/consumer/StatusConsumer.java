@@ -6,7 +6,10 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
+import com.example.backend1.model.CvCompareResponseMessage;
+import com.example.backend1.model.JobSpec;
 import com.example.backend1.model.StatusMessage;
+import com.example.backend1.repository.JobSpecRepository;
 
 @Component
 public class StatusConsumer {
@@ -15,14 +18,20 @@ public class StatusConsumer {
     
     private final SimpMessagingTemplate messagingTemplate;
 
-    public StatusConsumer(SimpMessagingTemplate messagingTemplate) {
+    private final JobSpecRepository jobSpecRepository;
+
+    public StatusConsumer(SimpMessagingTemplate messagingTemplate, JobSpecRepository jobSpecRepository) {
         this.messagingTemplate = messagingTemplate;
+        this.jobSpecRepository = jobSpecRepository;
     }
 
     @RabbitListener(queues = "status-queue")
-    public void receiveMessage(StatusMessage message) {
-        logger.info("Received status message: " + message.getId() + " with status: " + message.getStatus());
-        
+    public void receiveMessage(CvCompareResponseMessage message) {
+        logger.info("Received status message: " + message.getJobSpecId() + " with status: " + message.getScore());
+        JobSpec jobSpec = jobSpecRepository.findById(message.getJobSpecId()).get();
+        jobSpec.setScore(String.valueOf(message.getScore()));
+        jobSpec.setLocation(message.getLocation().substring(0, Math.min(200, message.getLocation().length())));
+        jobSpecRepository.save(jobSpec);
         messagingTemplate.convertAndSend("/topic/status", message);
     }
 }
