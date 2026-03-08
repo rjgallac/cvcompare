@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DataTable } from './DataTable';
 import { MessageDisplay } from './MessageDisplay';
 
@@ -8,15 +8,28 @@ interface Cv {
   curriculum_vitae_content: string;
 }
 
-interface CvManagerProps {
-  cvs: Cv[];
-}
-
-export function CvManager({ cvs }: CvManagerProps) {
+export function CvManager() {
   const [name, setName] = useState('');
   const [cvContent, setCvContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState('');
+  const [cvs, setCvs] = useState<Cv[]>([]);
+
+  useEffect(() => {
+    fetchCvs();
+  }, []);
+
+  const fetchCvs = async () => {
+    try {
+      const response = await fetch('/api/cv');
+      if (response.ok) {
+        const data = await response.json();
+        setCvs(data);
+      }
+    } catch (error) {
+      console.error('Error fetching CVs:', error);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,6 +51,7 @@ export function CvManager({ cvs }: CvManagerProps) {
         setMessage('CV submitted successfully!');
         setName('');
         setCvContent('');
+        fetchCvs();
       } else {
         setMessage('Failed to submit CV');
       }
@@ -56,6 +70,7 @@ export function CvManager({ cvs }: CvManagerProps) {
 
       if (response.ok) {
         setMessage('CV deleted successfully!');
+        fetchCvs();
       } else {
         setMessage('Failed to delete CV');
       }

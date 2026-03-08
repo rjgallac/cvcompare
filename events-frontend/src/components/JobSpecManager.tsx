@@ -2,11 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { DataTable } from './DataTable';
 import { MessageDisplay } from './MessageDisplay';
 
-interface Cv {
-  id: number;
-  name: string;
-}
-
 interface JobSpec {
   cvId: number | null;
   id: number;
@@ -18,20 +13,30 @@ interface JobSpec {
   jobTitle: string | null;
 }
 
-interface JobSpecManagerProps {
-  cvs: Cv[];
-}
-
-export function JobSpecManager({ cvs }: JobSpecManagerProps) {
+export function JobSpecManager() {
   const [jobSpecContent, setJobSpecContent] = useState('');
   const [selectedCvId, setSelectedCvId] = useState<number | ''>('');
   const [isSubmittingJobSpec, setIsSubmittingJobSpec] = useState(false);
   const [message2, setMessage2] = useState('');
   const [jobSpecs, setJobSpecs] = useState<JobSpec[]>([]);
+  const [cvs, setCvs] = useState<any[]>([]);
 
   useEffect(() => {
+    fetchCvs();
     fetchJobSpecs();
   }, []);
+
+  const fetchCvs = async () => {
+    try {
+      const response = await fetch('/api/cv');
+      if (response.ok) {
+        const data = await response.json();
+        setCvs(data);
+      }
+    } catch (error) {
+      console.error('Error fetching CVs:', error);
+    }
+  };
 
   const fetchJobSpecs = async () => {
     try {
@@ -107,11 +112,9 @@ export function JobSpecManager({ cvs }: JobSpecManagerProps) {
     { key: 'jobTitle', header: 'Job Title' },
   ];
 
-  const formatValue = (value: any, _row: JobSpec) => {
+  const formatValue = (value: any) => {
     if (value === null || value === undefined) return '-';
-    if (typeof value === 'number') {
-      return `$${value}`;
-    }
+    if (typeof value === 'number') return `$${value}`;
     return value;
   };
 
