@@ -40,36 +40,33 @@ public class ProductConsumer {
     public void receiveMessage(CvCompareMessage message) {
         // logger.info("Received message: " + message.getCvContent());
         StringBuilder sb = new StringBuilder();
-        sb.append("You are a powerful cv analysis service for comparing CVs and provide your responses in JSON format for a calling server.Only return the final answer. Do not include any reasoning, thoughts, or explanations.");
-        sb.append("Compare the following CV content with the job description and provide a score from 0 to 100, where 100 means a perfect match.");
-        sb.append("CV Content: " + message.getCvContent());
+        sb.append("can you extract the salary , position, company and location from this text please");
         sb.append("Job Description: " + message.getJobSpecContent());
-        sb.append("Can you extract score, the company name, salary in GBP £ if possible or put 0/None if you cant find it, job title(position) or put none if you can't find it and location(or put none if you cant find it) and provide them in a JSON format like this:");
-        
-        sb.append("{\"score\": 85, \"company\": \"Tech Company\", \"salary\": \"£40-£50k\", \"title\": \"Software Engineer\", \"location\": \"Sheffield, UK\"}");
-        sb.append("Only provide the JSON response without any additional text.If you cannot extract any of the fields, please set them to null or 0 for score.");
-        sb.append("if you respond with anything other than json the program will break. Only JSON should be returned nothing else, no other text should be returned.");
-        sb.append("If you cannot extract any of the fields, please set them to NONE/NA or 0 for score.");
-        // OpenAiChatOptions options = OpenAiChatOptions.builder()
-        //         .model("qwen3.5-9b")
-        //         // .outputSchema("AiResponse")
-        //         .temperature(0.2)
-        //         .maxTokens(500)
-                
-        //         .build();
-        // AiResponse aiResponse = chatClient
-        //     .prompt(sb.toString())
-        //     .options(options)
-        //     .call()
-        //     .entity(AiResponse.class);	
+      
+        StringBuilder sb2 = new StringBuilder();
+        sb2.append("Compare the following CV content with the job description and provide a score from 0 to 100, where 100 means a perfect match.");
+        sb2.append("Job Description: " + message.getJobSpecContent());
+        sb2.append("CV Content: " + message.getCvContent());
+
 OpenAiChatOptions options = OpenAiChatOptions.builder()
-        .responseFormat(
-            ResponseFormat.builder()
-            .type(ResponseFormat.Type.JSON_SCHEMA)
-            .jsonSchema("{\"type\":\"object\",\"properties\":{\"score\":{\"type\":\"number\"},\"company\":{\"type\":\"string\"},\"salary\":{\"type\":\"string\"},\"title\":{\"type\":\"string\"},\"location\":{\"type\":\"string\"}}}")
-            .build())
-            
-        .build();
+            .responseFormat(
+                ResponseFormat.builder()
+                .type(ResponseFormat.Type.JSON_SCHEMA)
+                .jsonSchema("{\"type\":\"object\",\"properties\":{\"company\":{\"type\":\"string\"},\"salary\":{\"type\":\"string\"},\"title\":{\"type\":\"string\"},\"location\":{\"type\":\"string\"}},\"required\":[\"company\",\"salary\",\"title\",\"location\"]}")
+                .build())
+            .temperature(0.0)    
+            .maxTokens(5000)
+            .frequencyPenalty(0.0)
+            .build();
+
+        OpenAiChatOptions options2 = OpenAiChatOptions.builder()
+            .responseFormat(
+                ResponseFormat.builder()
+                .type(ResponseFormat.Type.JSON_SCHEMA)
+                .jsonSchema("{\"type\":\"object\",\"properties\":{\"score\":{\"type\":\"number\"}}}}")
+                .build())
+                
+            .build();
 
         AiResponse aiResponse = chatClient
             .prompt(sb.toString())
@@ -77,18 +74,20 @@ OpenAiChatOptions options = OpenAiChatOptions.builder()
             .call()
             .entity(AiResponse.class);
 
-    //    String response = chatClient
-    //         .prompt(sb.toString())
-    //         .call()
-    //         .content();
+         AiResponse aiResponse2 = chatClient
+            .prompt(sb2.toString())
+            .options(options2)
+            .call()
+            .entity(AiResponse.class);
+
         
-        logger.info("Extracted AI Response: " + aiResponse.getScore() + ", " + aiResponse.getCompany() + ", " + aiResponse.getSalary() + ", " + aiResponse.getTitle() + ", " + aiResponse.getLocation());
+        logger.info("Extracted AI Response: " + aiResponse2.getScore() + ", " + aiResponse.getCompany() + ", " + aiResponse.getSalary() + ", " + aiResponse.getTitle() + ", " + aiResponse.getLocation());
         logger.info("================================");
 
       
         CvCompareResponseMessage responseMessage = new CvCompareResponseMessage(
             message.getJobSpecId(),
-            aiResponse.getScore(),
+            aiResponse2.getScore(),
             aiResponse.getCompany(),
             aiResponse.getSalary(),
             aiResponse.getTitle(),
