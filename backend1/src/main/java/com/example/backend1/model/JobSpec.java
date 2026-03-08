@@ -27,6 +27,8 @@ public class JobSpec {
 
     private Long cvId;
 
+    private String company;
+
     // Getters and setters
     public Long getId() {
         return id;
@@ -74,10 +76,11 @@ public class JobSpec {
         this.cvId = cvId;
     }
     public void setCompany(String substring) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setCompany'");
+        
     }
 
-
+    public String getCompany() {
+        return company;
+    }
 
 }
