@@ -8,7 +8,7 @@ Backend1 is the app that deals with taking the CVs from the frontend and storing
 
 Backend1 and Backend2 talk over Rabbitmq in an event driven fashion and messages are queued in the hope that no messages are lost in the process or if something happens a messaged can be replayed.
 
-![Architecture](/docs/sd.drawio)
+![Architecture](/docs/sd.png)
 
 ## 
 
