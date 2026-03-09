@@ -125,11 +125,19 @@ export function JobSpecManager() {
   };
 
   return (
-    <div>
-      <h1>Add Job Spec</h1>
-      <form onSubmit={handleSubmitJobSpec}>
-        <div style={{ marginBottom: '10px' }}>
-          <label htmlFor="cvId">CV:</label>
+    <div className="mb-8">
+      <h1 className="text-2xl font-bold mb-4">Add Job Spec</h1>
+      <form
+        onSubmit={handleSubmitJobSpec}
+        className="bg-white p-6 rounded-lg shadow-md space-y-4"
+      >
+        <div>
+          <label
+            htmlFor="cvId"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            CV:
+          </label>
           <select
             id="cvId"
             name="cvId"
@@ -140,7 +148,7 @@ export function JobSpecManager() {
               )
             }
             required
-            style={{ marginLeft: '10px', padding: '5px' }}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value="">Select a CV</option>
             {cvs.map((cv) => (
@@ -150,8 +158,13 @@ export function JobSpecManager() {
             ))}
           </select>
         </div>
-        <div style={{ marginBottom: '10px' }}>
-          <label htmlFor="job_spec_content">Job Spec Content:</label>
+        <div>
+          <label
+            htmlFor="job_spec_content"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Job Spec Content:
+          </label>
           <textarea
             id="job_spec_content"
             name="job_spec_content"
@@ -159,16 +172,20 @@ export function JobSpecManager() {
             onChange={(e) => setJobSpecContent(e.target.value)}
             required
             rows={5}
-            style={{ marginLeft: '10px', padding: '5px', width: '300px' }}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
-        <button type="submit" disabled={isSubmittingJobSpec}>
+        <button
+          type="submit"
+          disabled={isSubmittingJobSpec}
+          className={`w-full px-4 py-2 text-white rounded-md ${isSubmittingJobSpec ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'}`}
+        >
           {isSubmittingJobSpec ? 'Adding...' : 'Add Job Spec'}
         </button>
       </form>
       <MessageDisplay message={message2} marginTop="10px" />
 
-      <h1 style={{ marginTop: '40px' }}>Job Spec List</h1>
+      <h1 className="text-2xl font-bold mt-8 mb-4">Job Spec List</h1>
       <DataTable
         data={jobSpecs}
         columns={jobSpecColumns}
@@ -180,70 +197,39 @@ export function JobSpecManager() {
       />
 
       {showModal && selectedJobSpec && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: 'white',
-              padding: '20px',
-              borderRadius: '8px',
-              maxWidth: '700px',
-              width: '90%',
-              maxHeight: '80vh',
-              overflow: 'auto',
-            }}
-          >
-            <h2>Job Spec Details</h2>
-            <div style={{ marginBottom: '15px' }}>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg max-w-[700px] w-[90%] max-h-[80vh] overflow-auto">
+            <h2 className="text-xl font-semibold mb-4">Job Spec Details</h2>
+            <div className="mb-3">
               <strong>ID:</strong> {selectedJobSpec.id}
             </div>
-            <div style={{ marginBottom: '15px' }}>
+            <div className="mb-3">
               <strong>CV ID:</strong> {selectedJobSpec.cvId || '-'}
             </div>
-            <div style={{ marginBottom: '15px' }}>
+            <div className="mb-3">
               <strong>Job Title:</strong> {selectedJobSpec.jobTitle || '-'}
             </div>
-            <div style={{ marginBottom: '15px' }}>
+            <div className="mb-3">
               <strong>Company:</strong> {selectedJobSpec.company || '-'}
             </div>
-            <div style={{ marginBottom: '15px' }}>
+            <div className="mb-3">
               <strong>Location:</strong> {selectedJobSpec.location || '-'}
             </div>
-            <div style={{ marginBottom: '15px' }}>
+            <div className="mb-3">
               <strong>Salary:</strong> ${selectedJobSpec.salary ?? '-'}
             </div>
-            <div style={{ marginBottom: '15px' }}>
+            <div className="mb-3">
               <strong>Score:</strong> {selectedJobSpec.score ?? '-'}
             </div>
-            <div style={{ marginBottom: '15px' }}>
+            <div className="mb-3">
               <strong>Job Spec Content:</strong>
-              <pre
-                style={{
-                  backgroundColor: '#f5f5f5',
-                  padding: '10px',
-                  borderRadius: '4px',
-                  marginTop: '5px',
-                  whiteSpace: 'pre-wrap',
-                  wordBreak: 'break-word',
-                }}
-              >
+              <pre className="bg-gray-100 p-3 rounded mt-1 whitespace-pre-wrap break-word">
                 {selectedJobSpec.job_spec_content}
               </pre>
             </div>
             <button
               onClick={() => setShowModal(false)}
-              style={{ padding: '10px 20px' }}
+              className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
             >
               Close
             </button>

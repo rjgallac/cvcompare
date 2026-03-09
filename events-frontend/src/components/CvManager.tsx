@@ -92,11 +92,19 @@ export function CvManager() {
   ];
 
   return (
-    <div style={{ marginBottom: '40px' }}>
-      <h1>Add CV</h1>
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '10px' }}>
-          <label htmlFor="name">Name:</label>
+    <div className="mb-8">
+      <h1 className="text-2xl font-bold mb-4">Add CV</h1>
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-6 rounded-lg shadow-md space-y-4"
+      >
+        <div>
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Name:
+          </label>
           <input
             type="text"
             id="name"
@@ -104,11 +112,14 @@ export function CvManager() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            style={{ marginLeft: '10px', padding: '5px' }}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
-        <div style={{ marginBottom: '10px' }}>
-          <label htmlFor="curriculum_vitae_content">
+        <div>
+          <label
+            htmlFor="curriculum_vitae_content"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Curriculum Vitae Content:
           </label>
           <textarea
@@ -118,16 +129,20 @@ export function CvManager() {
             onChange={(e) => setCvContent(e.target.value)}
             required
             rows={5}
-            style={{ marginLeft: '10px', padding: '5px', width: '300px' }}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
-        <button type="submit" disabled={isSubmitting || !cvContent.trim()}>
+        <button
+          type="submit"
+          disabled={isSubmitting || !cvContent.trim()}
+          className={`w-full px-4 py-2 text-white rounded-md ${isSubmitting || !cvContent.trim() ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'}`}
+        >
           {isSubmitting ? 'Submitting...' : 'Submit CV'}
         </button>
       </form>
       <MessageDisplay message={message} marginTop="20px" />
 
-      <h1 style={{ marginTop: '40px' }}>CV List</h1>
+      <h1 className="text-2xl font-bold mt-8 mb-4">CV List</h1>
       <DataTable
         data={cvs}
         columns={cvColumns}
@@ -138,55 +153,24 @@ export function CvManager() {
       />
 
       {showModal && selectedCv && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: 'white',
-              padding: '20px',
-              borderRadius: '8px',
-              maxWidth: '600px',
-              width: '90%',
-              maxHeight: '80vh',
-              overflow: 'auto',
-            }}
-          >
-            <h2>CV Details</h2>
-            <div style={{ marginBottom: '15px' }}>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg max-w-2xl w-[90%] max-h-[80vh] overflow-auto">
+            <h2 className="text-xl font-semibold mb-4">CV Details</h2>
+            <div className="mb-3">
               <strong>ID:</strong> {selectedCv.id}
             </div>
-            <div style={{ marginBottom: '15px' }}>
+            <div className="mb-3">
               <strong>Name:</strong> {selectedCv.name}
             </div>
-            <div style={{ marginBottom: '15px' }}>
+            <div className="mb-3">
               <strong>CV Content:</strong>
-              <pre
-                style={{
-                  backgroundColor: '#f5f5f5',
-                  padding: '10px',
-                  borderRadius: '4px',
-                  marginTop: '5px',
-                  whiteSpace: 'pre-wrap',
-                  wordBreak: 'break-word',
-                }}
-              >
+              <pre className="bg-gray-100 p-3 rounded mt-1 whitespace-pre-wrap break-word">
                 {selectedCv.curriculum_vitae_content}
               </pre>
             </div>
             <button
               onClick={() => setShowModal(false)}
-              style={{ padding: '10px 20px' }}
+              className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
             >
               Close
             </button>
