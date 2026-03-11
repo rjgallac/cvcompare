@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Client, StompSubscription } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 import { DataTable } from './DataTable';
 import { MessageDisplay } from './MessageDisplay';
 
@@ -22,11 +24,68 @@ export function JobSpecManager() {
   const [cvs, setCvs] = useState<any[]>([]);
   const [selectedJobSpec, setSelectedJobSpec] = useState<JobSpec | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const stompClientRef = useRef<Client | null>(null);
 
   useEffect(() => {
     fetchCvs();
     fetchJobSpecs();
+    connectWebSocket();
+    return () => {
+      if (stompClientRef.current) {
+        stompClientRef.current.deactivate();
+      }
+    };
   }, []);
+
+  const connectWebSocket = () => {
+    const stompClient: Client = new Client({
+      webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
+      reconnectDelay: 5000,
+    });
+
+    stompClient.onConnect = (frame: any) => {
+      console.log('Connected to WebSocket:', frame);
+      const subscription: StompSubscription = stompClient.subscribe(
+        '/topic/status',
+        (message: any) => {
+          try {
+            const statusMessage: any = JSON.parse(message.body);
+            updateJobSpecInList(statusMessage);
+          } catch (error) {
+            console.error('Error parsing WebSocket message:', error);
+          }
+        },
+      );
+    };
+
+    stompClient.onStompError = (frame: any) => {
+      console.error('WebSocket connection error:', frame);
+    };
+
+    stompClient.activate();
+
+    stompClientRef.current = stompClient;
+  };
+
+  const updateJobSpecInList = (statusMessage: any) => {
+    setJobSpecs((prevJobSpecs) =>
+      prevJobSpecs.map((jobSpec) => {
+        if (jobSpec.id === statusMessage.jobSpecId) {
+          return {
+            ...jobSpec,
+            score: statusMessage.score,
+            location: statusMessage.location,
+            jobTitle: statusMessage.title,
+            company: statusMessage.company,
+            salary: statusMessage.salary
+              ? parseInt(statusMessage.salary)
+              : null,
+          };
+        }
+        return jobSpec;
+      }),
+    );
+  };
 
   const fetchCvs = async () => {
     try {
