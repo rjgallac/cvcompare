@@ -15,6 +15,7 @@ interface JobSpec {
   score: number | null;
   company: string | null;
   jobTitle: string | null;
+  status: string | null;
 }
 
 export function JobSpecManager() {
@@ -216,6 +217,7 @@ export function JobSpecManager() {
     { key: 'score', header: 'Score' },
     { key: 'company', header: 'Company' },
     { key: 'jobTitle', header: 'Job Title' },
+    { key: 'status', header: 'Status' },
   ];
 
   const isSubmitting = (id: number) => submittingJobSpecIds.includes(id);
@@ -323,6 +325,9 @@ export function JobSpecManager() {
             </div>
             <div className="mb-3">
               <strong>Score:</strong> {selectedJobSpec.score ?? '-'}
+            </div>
+            <div className="mb-3">
+              <strong>Status:</strong> {selectedJobSpec.status ?? '-'}
             </div>
             <div className="mb-3">
               <strong>Job Spec Content:</strong>

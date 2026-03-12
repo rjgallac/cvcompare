@@ -9,6 +9,7 @@ public class JobSpecDto {
     private String score;
     private String jobTitle;
     private String company;
+    private String status;
 
     public String getLocation() {
         return location;
@@ -62,5 +63,13 @@ public class JobSpecDto {
     }
     public void setCompany(String company) {
         this.company = company;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

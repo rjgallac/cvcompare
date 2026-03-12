@@ -46,6 +46,7 @@ public class JobSpecController {
        
         // save job spec to database
         JobSpec jobSpec = jobSpecMapper.toEntity(jobSpecDto);
+        jobSpec.setStatus("pending");
         jobSpecService.addJobSpec(jobSpec);
 
         return "Product added successfully";

@@ -26,6 +26,7 @@ public class JobSpecMapper {
         jobSpecDto.setCvId(jobSpec.getCvId());
         jobSpecDto.setJobTitle(jobSpec.getJobTitle());
         jobSpecDto.setCompany(jobSpec.getCompany());
+        jobSpecDto.setStatus(jobSpec.getStatus());
         return jobSpecDto;
     }
 
