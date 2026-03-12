@@ -157,7 +157,7 @@ export function CvManager() {
         columns={cvColumns}
         onDelete={handleDeleteCv}
         onActionClick={handleViewClick}
-        actionLabel="View/Edit"
+        actionLabel="View"
         emptyMessage="No CVs submitted yet."
       />
 
