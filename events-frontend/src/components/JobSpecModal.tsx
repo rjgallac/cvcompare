@@ -46,7 +46,7 @@ export function JobSpecModal({ jobSpec, onClose }: JobSpecModalProps) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-      <div className="bg-white p-6 rounded-lg max-w-[700px] w-[90%] max-h-[80vh] overflow-auto">
+      <div className="bg-white p-6 rounded-lg max-w-[700px] w-[90%] max-h-[80vh] overflow-auto flex flex-col">
         <h2 className="text-xl font-semibold mb-4">Job Spec Details</h2>
         <div className="mb-3">
           <strong>ID:</strong> {jobSpec.id}
@@ -101,13 +101,13 @@ export function JobSpecModal({ jobSpec, onClose }: JobSpecModalProps) {
         </div>
         <div className="mb-3">
           <strong>Job Spec Content:</strong>
-          <pre className="bg-gray-100 p-3 rounded mt-1 whitespace-pre-wrap break-word">
+          <pre className="bg-gray-100 p-3 rounded mt-1 whitespace-pre-wrap break-word flex-grow overflow-auto max-h-[40vh]">
             {jobSpec.job_spec_content}
           </pre>
         </div>
         <button
           onClick={onClose}
-          className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
+          className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 mt-auto"
         >
           Close
         </button>
