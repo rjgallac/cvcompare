@@ -1,4 +1,4 @@
-package com.example.backend1.model;
+package com.example.backend1.dto;
 
 public class JobSpecDto {
     private Long id;

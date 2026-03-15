@@ -6,9 +6,9 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
+import com.example.backend1.message.CvCompareResponseMessage;
+import com.example.backend1.message.CvSuggestResponseMessage;
 import com.example.backend1.model.CurriculumVitae;
-import com.example.backend1.model.CvCompareResponseMessage;
-import com.example.backend1.model.CvSuggestResponseMessage;
 import com.example.backend1.model.JobSpec;
 import com.example.backend1.repository.CvRepository;
 import com.example.backend1.repository.JobSpecRepository;

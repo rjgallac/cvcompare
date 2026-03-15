@@ -1,6 +1,9 @@
-package com.example.backend1.model;
+package com.example.backend1.mapper;
 
 import org.springframework.stereotype.Component;
+
+import com.example.backend1.dto.JobSpecDto;
+import com.example.backend1.model.JobSpec;
 
 @Component
 public class JobSpecMapper {

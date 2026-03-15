@@ -1,4 +1,7 @@
-package com.example.backend1.model;
+package com.example.backend1.mapper;
+
+import com.example.backend1.dto.CvDto;
+import com.example.backend1.model.CurriculumVitae;
 
 public class CvMapper {
 

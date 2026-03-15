@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.backend1.dto.CvDto;
+import com.example.backend1.mapper.CvMapper;
 import com.example.backend1.model.CurriculumVitae;
-import com.example.backend1.model.CvDto;
-import com.example.backend1.model.CvMapper;
 import com.example.backend1.service.CvService;
 
 

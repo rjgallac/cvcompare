@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.backend1.dto.JobSpecDto;
+import com.example.backend1.mapper.JobSpecMapper;
 import com.example.backend1.model.JobSpec;
-import com.example.backend1.model.JobSpecDto;
-import com.example.backend1.model.JobSpecMapper;
 import com.example.backend1.service.JobSpecService;
 
 

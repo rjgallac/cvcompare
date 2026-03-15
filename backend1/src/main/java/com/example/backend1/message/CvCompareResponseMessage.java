@@ -1,4 +1,4 @@
-package com.example.backend1.model;
+package com.example.backend1.message;
 
 import java.io.Serializable;
 

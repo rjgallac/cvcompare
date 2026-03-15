@@ -1,4 +1,4 @@
-package com.example.backend1.model;
+package com.example.backend1.message;
 
 public class CvCompareMessage implements java.io.Serializable {
     private static final long serialVersionUID = 1L;

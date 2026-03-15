@@ -3,11 +3,10 @@ package com.example.backend1.service;
 import java.util.List;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.backend1.message.CvCompareMessage;
 import com.example.backend1.model.CurriculumVitae;
-import com.example.backend1.model.CvCompareMessage;
 import com.example.backend1.model.JobSpec;
 import com.example.backend1.repository.CvRepository;
 import com.example.backend1.repository.JobSpecRepository;

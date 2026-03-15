@@ -101,7 +101,7 @@ export function JobSpecModal({ jobSpec, onClose }: JobSpecModalProps) {
         </div>
         <div className="mb-3">
           <strong>Job Spec Content:</strong>
-          <pre className="bg-gray-100 p-3 rounded mt-1 whitespace-pre-wrap break-word flex-grow overflow-auto max-h-[40vh]">
+          <pre className="bg-gray-100 p-3 rounded mt-1 whitespace-pre-wrap break-word flex-grow overflow-auto max-h-[30vh]">
             {jobSpec.job_spec_content}
           </pre>
         </div>
