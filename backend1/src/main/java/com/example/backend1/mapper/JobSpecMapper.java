@@ -11,6 +11,7 @@ public class JobSpecMapper {
     public JobSpec toEntity(JobSpecDto jobSpecDto) {
         JobSpec jobSpec = new JobSpec();
         jobSpec.setId(jobSpecDto.getId());
+        jobSpec.setName(jobSpecDto.getName());
         jobSpec.setJobSpecContent(jobSpecDto.getJob_spec_content());
         jobSpec.setLocation(jobSpecDto.getLocation());
         jobSpec.setSalary(jobSpecDto.getSalary());

@@ -4,34 +4,29 @@ import { JobSpecListItem } from './JobSpecListItem';
 import { JobSpec } from '../types/JobSpec';
 
 interface JobSpecFormProps {
-  cvs: Array<{ id: number; name: string }>;
-  onSubmitJobSpec: (cvId: number | null, content: string) => Promise<void>;
+  onSubmitJobSpec: (cvName: string, content: string) => Promise<void>;
   onNavigateToList: () => void;
 }
 
 export function JobSpecForm({
-  cvs,
   onSubmitJobSpec,
   onNavigateToList,
 }: JobSpecFormProps) {
   const [jobSpecContent, setJobSpecContent] = useState('');
-  const [selectedCvId, setSelectedCvId] = useState<number | ''>('');
+  const [cvName, setCvName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!jobSpecContent.trim()) return;
+    if (!cvName.trim() || !jobSpecContent.trim()) return;
 
     setIsSubmitting(true);
 
     try {
-      await onSubmitJobSpec(
-        selectedCvId === '' ? null : Number(selectedCvId),
-        jobSpecContent,
-      );
+      await onSubmitJobSpec(cvName, jobSpecContent);
       toast.success('Job spec submitted successfully!');
+      setCvName('');
       setJobSpecContent('');
-      setSelectedCvId('');
       onNavigateToList();
     } catch (error) {
       toast.error('Error submitting job spec');
@@ -46,29 +41,19 @@ export function JobSpecForm({
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label
-            htmlFor="cvId"
+            htmlFor="cvName"
             className="block text-sm font-medium text-gray-700 mb-1"
           >
-            CV:
+            CV Name:
           </label>
-          <select
-            id="cvId"
-            value={selectedCvId}
-            onChange={(e) =>
-              setSelectedCvId(
-                e.target.value === '' ? '' : Number(e.target.value),
-              )
-            }
-            required
+          <input
+            type="text"
+            id="cvName"
+            value={cvName}
+            onChange={(e) => setCvName(e.target.value)}
+            placeholder="Enter CV name"
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">Select a CV</option>
-            {cvs.map((cv) => (
-              <option key={cv.id} value={cv.id}>
-                {cv.name} ({cv.id})
-              </option>
-            ))}
-          </select>
+          />
         </div>
         <div>
           <label

@@ -2,7 +2,7 @@ package com.example.backend1.dto;
 
 public class JobSpecDto {
     private Long id;
-    private Long cvId;
+    private String name;
     private String job_spec_content;
     private String location;
     private String salary;
@@ -39,18 +39,19 @@ public class JobSpecDto {
         this.id = id;
     }
 
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getJob_spec_content() {
         return job_spec_content;
     }
 
     public void setJob_spec_content(String job_spec_content) {
         this.job_spec_content = job_spec_content;
-    }
-    public Long getCvId() {
-        return cvId;
-    }
-    public void setCvId(Long cvId) {
-        this.cvId = cvId;
     }
     public String getJobTitle() {
         return jobTitle;
