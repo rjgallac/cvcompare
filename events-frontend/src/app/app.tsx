@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { CvManager } from '../components/CvManager';
 import { JobSpecManager } from '../components/JobSpecManager';
 import { CompareForm } from '../components/CompareForm';
+import { CompareList } from '../components/CompareList';
 import { ToastContainer } from 'react-toastify';
 import {
   NavigationMenu,
@@ -13,9 +14,9 @@ import {
 } from '@/components/ui/navigation-menu';
 
 export function App() {
-  const [activeTab, setActiveTab] = useState<'cv' | 'job-spec' | 'compare'>(
-    'cv',
-  );
+  const [activeTab, setActiveTab] = useState<
+    'cv' | 'job-spec' | 'compare-form' | 'compare-list'
+  >('cv');
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -101,7 +102,6 @@ export function App() {
                     </a>
                   </NavigationMenuLink>
                 </li>
-                
               </ul>
             </NavigationMenuContent>
           </NavigationMenuItem>
@@ -110,22 +110,38 @@ export function App() {
             <NavigationMenuTrigger>Compare</NavigationMenuTrigger>
             <NavigationMenuContent>
               <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-2">
-                
                 <li>
                   <NavigationMenuLink asChild>
                     <a
                       href="#"
                       onClick={(e) => {
                         e.preventDefault();
-                        setActiveTab('compare');
+                        setActiveTab('compare-form');
                       }}
-                      className={`block h-full select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-gray-100 ${activeTab === 'compare' ? 'bg-gray-100' : ''}`}
+                      className={`block h-full select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-gray-100 ${activeTab === 'compare-form' ? 'bg-gray-100' : ''}`}
                     >
                       <div className="text-sm font-medium">
                         Compare CV with Job Spec
                       </div>
                       <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                        Select a CV and job spec to compare them
+                        Create a new comparison
+                      </p>
+                    </a>
+                  </NavigationMenuLink>
+                </li>
+                <li>
+                  <NavigationMenuLink asChild>
+                    <a
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setActiveTab('compare-list');
+                      }}
+                      className={`block h-full select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-gray-100 ${activeTab === 'compare-list' ? 'bg-gray-100' : ''}`}
+                    >
+                      <div className="text-sm font-medium">Compare List</div>
+                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                        View all CV and Job Spec comparisons
                       </p>
                     </a>
                   </NavigationMenuLink>
@@ -140,7 +156,8 @@ export function App() {
         <div className="max-w-3xl mx-auto">
           {activeTab === 'cv' && <CvManager />}
           {activeTab === 'job-spec' && <JobSpecManager />}
-          {activeTab === 'compare' && <CompareForm />}
+          {activeTab === 'compare-form' && <CompareForm />}
+          {activeTab === 'compare-list' && <CompareList />}
         </div>
       </div>
     </div>
