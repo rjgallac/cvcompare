@@ -1,8 +1,13 @@
 package com.example.backend1.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.StreamSupport;
+
 import org.springframework.stereotype.Service;
 
 import com.example.backend1.dto.CompareCvDto;
+import com.example.backend1.dto.CompareCvListItemDto;
 import com.example.backend1.model.CurriculumVitae;
 import com.example.backend1.model.CvCompare;
 import com.example.backend1.model.JobSpec;
@@ -36,6 +41,19 @@ public class CvCompareService {
         cvCompare.setCurriculumVitae(cv);
         cvCompare.setJobSpec(jobSpec);
         cvCompareRepository.save(cvCompare);
+    }
+
+    public List<CompareCvListItemDto> getAllCvCompares() {
+        List<CvCompare> cvCompares = (List<CvCompare>) cvCompareRepository.findAll();
+        List<CompareCvListItemDto> compareCvListItemDtos = new ArrayList<>();
+        for (CvCompare cvCompare : cvCompares) {
+            CompareCvListItemDto itemDto = new CompareCvListItemDto();
+            itemDto.setId(cvCompare.getId());
+            itemDto.setCvName(cvCompare.getCurriculumVitae().getName());
+            itemDto.setJobSpecName(cvCompare.getJobSpec().getName());
+            compareCvListItemDtos.add(itemDto);
+        }
+        return compareCvListItemDtos;
     }
 
 

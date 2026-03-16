@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend1.dto.CompareCvDto;
+import com.example.backend1.dto.CompareCvListItemDto;
 import com.example.backend1.model.CurriculumVitae;
 import com.example.backend1.model.CvCompare;
 import com.example.backend1.model.JobSpec;
@@ -12,6 +13,9 @@ import com.example.backend1.repository.CvRepository;
 import com.example.backend1.repository.JobSpecRepository;
 import com.example.backend1.service.CvCompareService;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -34,6 +38,11 @@ public class CvCompareController {
        cvCompareService.addCvCompare(compareCvDto);
 
         return "    ";
+    }
+
+    @GetMapping()
+    public List<CompareCvListItemDto> getAllCvCompares() {
+        return cvCompareService.getAllCvCompares();
     }
     
 
