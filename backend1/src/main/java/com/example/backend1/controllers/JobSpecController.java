@@ -35,7 +35,7 @@ public class JobSpecController {
     }
 
     @GetMapping
-    public List<JobSpecDto> getProducts() {
+    public List<JobSpecDto> getSpecs() {
         List<JobSpec> jobSpecs = jobSpecService.getJobSpecs();
         return jobSpecs.stream().map(jobSpecMapper::toDto).collect(java.util.stream.Collectors.toList());
     }

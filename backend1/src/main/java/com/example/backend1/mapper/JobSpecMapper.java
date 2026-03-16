@@ -20,6 +20,7 @@ public class JobSpecMapper {
 
     public JobSpecDto toDto(JobSpec jobSpec) {
         JobSpecDto jobSpecDto = new JobSpecDto();
+        jobSpecDto.setName(jobSpec.getName());
         jobSpecDto.setId(jobSpec.getId());
         jobSpecDto.setJob_spec_content(jobSpec.getJobSpecContent());
         jobSpecDto.setLocation(jobSpec.getLocation());
