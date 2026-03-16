@@ -14,6 +14,8 @@ public class JobSpec {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String name;
+
     private String jobTitle;
 
     @Column(columnDefinition="TEXT")
@@ -22,10 +24,6 @@ public class JobSpec {
     private String location;
 
     private String salary;
-
-    private String score;
-
-    private Long cvId;
 
     private String status;
 
@@ -38,6 +36,13 @@ public class JobSpec {
     public void setId(Long id) {
         this.id = id;
     }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getJobTitle() {
         return jobTitle;
     }
@@ -63,20 +68,7 @@ public class JobSpec {
     public void setSalary(String salary) {
         this.salary = salary;
     }
-    public String getScore() {
-        return score;
-    }
-    public void setScore(String score) {
-        this.score = score;
-    }
-
-    public Long getCvId() {
-        return cvId;
-    }
-
-    public void setCvId(Long cvId) {
-        this.cvId = cvId;
-    }
+    
     public void setCompany(String company) {
         this.company = company;
     }
