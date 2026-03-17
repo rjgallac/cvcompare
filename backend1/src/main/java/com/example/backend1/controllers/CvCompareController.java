@@ -15,7 +15,9 @@ import com.example.backend1.service.CvCompareService;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -43,6 +45,11 @@ public class CvCompareController {
     @GetMapping()
     public List<CompareCvListItemDto> getAllCvCompares() {
         return cvCompareService.getAllCvCompares();
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteCompare(@PathVariable Long id) {
+        cvCompareService.delete(id);
     }
     
 

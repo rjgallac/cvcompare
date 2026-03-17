@@ -24,6 +24,20 @@ export function CompareList() {
       });
   }, []);
 
+  const handleDelete = async (id: number) => {
+    if (!confirm('Are you sure you want to delete this item?')) return;
+
+    try {
+      await fetch(`http://localhost:8080/api/compare/${id}`, {
+        method: 'DELETE',
+      });
+      setCompares(compares.filter((c) => c.id !== id));
+      toast.success('Item deleted successfully');
+    } catch (err) {
+      toast.error('Error deleting item');
+    }
+  };
+
   if (loading) {
     return <div className="text-center py-4">Loading...</div>;
   }
@@ -43,6 +57,7 @@ export function CompareList() {
             <th className="text-left py-2">ID</th>
             <th className="text-left py-2">CV Name</th>
             <th className="text-left py-2">Job Spec Name</th>
+            <th className="text-left py-2">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -51,6 +66,14 @@ export function CompareList() {
               <td className="py-3">{compare.id}</td>
               <td className="py-3">{compare.cvName}</td>
               <td className="py-3">{compare.jobSpecName}</td>
+              <td className="py-3">
+                <button
+                  onClick={() => handleDelete(compare.id)}
+                  className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                >
+                  Delete
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>

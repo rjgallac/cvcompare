@@ -74,5 +74,9 @@ public class CvCompareService {
         return compareCvListItemDtos;
     }
 
+    public void delete(Long id) {
+       cvCompareRepository.deleteById(id);
+    }
+
 
 }

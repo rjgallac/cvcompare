@@ -4,7 +4,7 @@ import { JobSpecListItem } from './JobSpecListItem';
 import { JobSpec } from '../types/JobSpec';
 
 interface JobSpecFormProps {
-  onSubmitJobSpec: (cvName: string, content: string) => Promise<void>;
+  onSubmitJobSpec: (name: string, content: string) => Promise<void>;
   onNavigateToList: () => void;
 }
 
@@ -12,20 +12,20 @@ export function JobSpecForm({
   onSubmitJobSpec,
   onNavigateToList,
 }: JobSpecFormProps) {
+  const [jobSpecName, setJobSpecName] = useState('');
   const [jobSpecContent, setJobSpecContent] = useState('');
-  const [cvName, setCvName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!cvName.trim() || !jobSpecContent.trim()) return;
+    if (!jobSpecName.trim() || !jobSpecContent.trim()) return;
 
     setIsSubmitting(true);
 
     try {
-      await onSubmitJobSpec(cvName, jobSpecContent);
+      await onSubmitJobSpec(jobSpecName, jobSpecContent);
       toast.success('Job spec submitted successfully!');
-      setCvName('');
+      setJobSpecName('');
       setJobSpecContent('');
       onNavigateToList();
     } catch (error) {
@@ -41,17 +41,17 @@ export function JobSpecForm({
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label
-            htmlFor="cvName"
+            htmlFor="jobSpecName"
             className="block text-sm font-medium text-gray-700 mb-1"
           >
-            CV Name:
+            Job Spec Name:
           </label>
           <input
             type="text"
-            id="cvName"
-            value={cvName}
-            onChange={(e) => setCvName(e.target.value)}
-            placeholder="Enter CV name"
+            id="jobSpecName"
+            value={jobSpecName}
+            onChange={(e) => setJobSpecName(e.target.value)}
+            placeholder="Enter job spec name"
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>

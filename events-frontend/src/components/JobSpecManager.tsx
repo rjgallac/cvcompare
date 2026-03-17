@@ -38,7 +38,7 @@ export function JobSpecManager() {
     stompClient.onConnect = (frame: any) => {
       console.log('Connected to WebSocket:', frame);
       const subscription: StompSubscription = stompClient.subscribe(
-        '/topic/status',
+        '/topic/jobspec',
         (message: any) => {
           try {
             const statusMessage: any = JSON.parse(message.body);
@@ -116,14 +116,14 @@ export function JobSpecManager() {
     }
   };
 
-  const handleSubmitJobSpec = async (cvId: number | null, content: string) => {
+  const handleSubmitJobSpec = async (name: string, content: string) => {
     try {
       const response = await fetch('/api/jobspec', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ cvId, job_spec_content: content }),
+        body: JSON.stringify({ name, job_spec_content: content }),
       });
 
       if (response.ok) {
@@ -210,7 +210,6 @@ export function JobSpecManager() {
 
       {view === 'form' ? (
         <JobSpecForm
-          cvs={cvs}
           onSubmitJobSpec={handleSubmitJobSpec}
           onNavigateToList={() => setView('list')}
         />

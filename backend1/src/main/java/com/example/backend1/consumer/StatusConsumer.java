@@ -43,7 +43,10 @@ public class StatusConsumer {
         logger.info("Received suggest message: " + cvSuggestResponseMessage.getCvId());
         CurriculumVitae curriculumVitae = cvRepository.findById(cvSuggestResponseMessage.getCvId()).get();
         curriculumVitae.setCurriculum_vitae_content_suggestions(cvSuggestResponseMessage.getSuggestions());
+        curriculumVitae.setStatus("complete");
         cvRepository.save(curriculumVitae);
+        messagingTemplate.convertAndSend("/topic/cv", curriculumVitae);
+
     }
 
     @RabbitListener(queues = QueueVars.JOBSPEC_RESPONSE_QUEUE)
@@ -56,7 +59,7 @@ public class StatusConsumer {
         jobSpec.setSalary(message.getSalary());
         jobSpec.setStatus("completed");
         jobSpecRepository.save(jobSpec);
-        messagingTemplate.convertAndSend("/topic/status", message);
+        messagingTemplate.convertAndSend("/topic/jobspec", message);
     }
 
     @RabbitListener(queues = QueueVars.CV_COMPARE_RESPONSE_QUEUE)
@@ -67,7 +70,7 @@ public class StatusConsumer {
         cvCompare.setScore(cvCompareResponseMessage.getScore());
         cvCompare.setStatus("completed");
         cvCompareRepository.save(cvCompare);
-        messagingTemplate.convertAndSend("/topic/status", cvCompare);
+        messagingTemplate.convertAndSend("/topic/cvcompare", cvCompare);
     }
 
 }

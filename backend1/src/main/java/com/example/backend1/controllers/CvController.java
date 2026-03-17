@@ -45,17 +45,9 @@ public class CvController {
         return cvMapper.toDto(curriculumVitae);
     }
     
-    @GetMapping("/{id}/suggest")
-    public CvDto getSuggest(@PathVariable Long id) {
-        CurriculumVitae curriculumVitae = cvService.sendCvForComparison(id);
-        return cvMapper.toDto(curriculumVitae);
-    }
-
     @PostMapping
     public String addCv(@RequestBody CvDto cvDto) {
-        CurriculumVitae curriculumVitae = cvMapper.toEntity(cvDto);
-        cvService.addCv(curriculumVitae);
-        logger.info("Curriculum Vitae added: " + curriculumVitae.getId());
+        cvService.addCv(cvDto);
         return "Curriculum Vitae added successfully";
     }
     

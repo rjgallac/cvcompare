@@ -8,9 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.backend1.config.QueueVars;
+import com.example.backend1.controllers.CvController;
+import com.example.backend1.dto.CvDto;
+import com.example.backend1.mapper.CvMapper;
 import com.example.backend1.message.CvMessage;
 import com.example.backend1.model.CurriculumVitae;
 import com.example.backend1.repository.CvRepository;
+import java.util.logging.Logger;
 
 @Service
 public class CvService {
@@ -18,14 +22,23 @@ public class CvService {
     private final RabbitTemplate rabbitTemplate;
 
     private final CvRepository cvRepository;
+    private final CvMapper cvMapper;
 
-    public CvService(RabbitTemplate rabbitTemplate, CvRepository cvRepository) {
+    Logger logger = Logger.getLogger(CvService.class.getName());
+
+
+    public CvService(RabbitTemplate rabbitTemplate, CvRepository cvRepository, CvMapper cvMapper) {
         this.rabbitTemplate = rabbitTemplate;
         this.cvRepository = cvRepository;
+        this.cvMapper = cvMapper;
     }
 
-    public void addCv(CurriculumVitae curriculumVitae) {
+    public void addCv(CvDto cvDto) {
+        CurriculumVitae curriculumVitae = cvMapper.toEntity(cvDto);
+        curriculumVitae.setStatus("pending");
         CurriculumVitae saved = cvRepository.save(curriculumVitae);
+        logger.info("Curriculum Vitae added: " + curriculumVitae.getId());
+
         CvMessage cvMessage = new CvMessage(curriculumVitae.getCurriculum_vitae_content(), saved.getId());
         rabbitTemplate.convertAndSend(QueueVars.CV_QUEUE, cvMessage);
     }
@@ -40,15 +53,6 @@ public class CvService {
 
     public void deleteCv(Long id) {
         cvRepository.deleteById(id);
-    }
-
-    public CurriculumVitae sendCvForComparison(Long cvId) {
-        CurriculumVitae cv = getCv(cvId);
-        cv.setStatus("Processing");
-        cvRepository.save(cv);
-        CvMessage cvSuggestMessage = new CvMessage(cv.getCurriculum_vitae_content(), cvId);
-        rabbitTemplate.convertAndSend("cv-suggest-queue", cvSuggestMessage);
-        return cv;
     }
 
 }
