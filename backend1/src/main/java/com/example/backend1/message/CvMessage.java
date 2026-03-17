@@ -1,15 +1,15 @@
-package com.example.backend2.model;
+package com.example.backend1.message;
 
-public class CvSuggestMessage implements java.io.Serializable {
+public class CvMessage implements java.io.Serializable {
     private static final long serialVersionUID = 1L;
     private Long cvId;
     private String cvContent;
 
 
-    public CvSuggestMessage() {
+    public CvMessage() {
     }
 
-    public CvSuggestMessage(String cvContent, Long cvId) {
+    public CvMessage(String cvContent, Long cvId) {
         this.cvContent = cvContent;
         this.cvId = cvId;
     }

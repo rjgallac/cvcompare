@@ -7,7 +7,8 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.backend1.message.CvSuggestMessage;
+import com.example.backend1.config.QueueVars;
+import com.example.backend1.message.CvMessage;
 import com.example.backend1.model.CurriculumVitae;
 import com.example.backend1.repository.CvRepository;
 
@@ -24,7 +25,9 @@ public class CvService {
     }
 
     public void addCv(CurriculumVitae curriculumVitae) {
-        cvRepository.save(curriculumVitae);
+        CurriculumVitae saved = cvRepository.save(curriculumVitae);
+        CvMessage cvMessage = new CvMessage(curriculumVitae.getCurriculum_vitae_content(), saved.getId());
+        rabbitTemplate.convertAndSend(QueueVars.CV_QUEUE, cvMessage);
     }
 
     public List<CurriculumVitae> getCvs() {
@@ -43,7 +46,7 @@ public class CvService {
         CurriculumVitae cv = getCv(cvId);
         cv.setStatus("Processing");
         cvRepository.save(cv);
-        CvSuggestMessage cvSuggestMessage = new CvSuggestMessage(cv.getCurriculum_vitae_content(), cvId);
+        CvMessage cvSuggestMessage = new CvMessage(cv.getCurriculum_vitae_content(), cvId);
         rabbitTemplate.convertAndSend("cv-suggest-queue", cvSuggestMessage);
         return cv;
     }

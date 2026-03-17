@@ -1,29 +1,19 @@
 package com.example.backend2.model;
 
-public class AiResponse {
-    private int score;
+public class AiJobSpecResponse {
     private String company;
     private String salary;
     private String title;
     private String location;
 
-    public AiResponse() {
+    public AiJobSpecResponse() {
     }
 
-    public AiResponse(int score, String company, String salary, String title, String location) {
-        this.score = score;
+    public AiJobSpecResponse(String company, String salary, String title, String location) {
         this.company = company;
         this.salary = salary;
         this.title = title;
         this.location = location;
-    }
-
-    public int getScore() {
-        return score;
-    }
-
-    public void setScore(int score) {
-        this.score = score;
     }
 
     public String getCompany() {

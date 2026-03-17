@@ -4,10 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
+import com.example.backend1.config.QueueVars;
 import com.example.backend1.dto.CompareCvDto;
 import com.example.backend1.dto.CompareCvListItemDto;
+import com.example.backend1.message.CvCompareMessage;
+import com.example.backend1.message.JobSpecMessage;
 import com.example.backend1.model.CurriculumVitae;
 import com.example.backend1.model.CvCompare;
 import com.example.backend1.model.JobSpec;
@@ -24,12 +28,15 @@ public class CvCompareService {
 
     private final JobSpecRepository jobSpecRepository;
 
+    private final RabbitTemplate rabbitTemplate;
+
     public static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CvCompareService.class);
 
-    public CvCompareService(CvCompareRepository cvCompareRepository, CvRepository cvRepository, JobSpecRepository jobSpecRepository) {
+    public CvCompareService(CvCompareRepository cvCompareRepository, CvRepository cvRepository, JobSpecRepository jobSpecRepository, RabbitTemplate rabbitTemplate) {
         this.cvCompareRepository = cvCompareRepository;
         this.cvRepository = cvRepository;
         this.jobSpecRepository = jobSpecRepository;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     public void addCvCompare(CompareCvDto compareCvDto) {
@@ -40,7 +47,18 @@ public class CvCompareService {
       
         cvCompare.setCurriculumVitae(cv);
         cvCompare.setJobSpec(jobSpec);
-        cvCompareRepository.save(cvCompare);
+        CvCompare save = cvCompareRepository.save(cvCompare);
+        // send compare to rabbitmq for processing by ai backend
+
+        CvCompareMessage cvCompareMessage = new CvCompareMessage();
+        cvCompareMessage.setCvCompareId(save.getId());
+        cvCompareMessage.setCvContent(save.getCurriculumVitae().getCurriculum_vitae_content());
+        cvCompareMessage.setJobSpecContent(save.getJobSpec().getJobSpecContent());
+        
+
+        // send CV and JobSpec to RabbitMQ
+        rabbitTemplate.convertAndSend(QueueVars.CV_COMPARE_QUEUE, cvCompareMessage);
+
     }
 
     public List<CompareCvListItemDto> getAllCvCompares() {

@@ -1,17 +1,17 @@
-package com.example.backend1.message;
+package com.example.backend2.message;
 
 import java.io.Serializable;
 
-public class CvSuggestResponseMessage implements Serializable {
+public class CvResponseMessage implements Serializable {
     private static final long serialVersionUID = 1L;
     private Long cvId;
     private String suggestions;
 
 
-    public CvSuggestResponseMessage() {
+    public CvResponseMessage() {
     }
 
-    public CvSuggestResponseMessage(Long cvId, String suggestions) {
+    public CvResponseMessage(Long cvId, String suggestions) {
         this.cvId = cvId;
         this.suggestions = suggestions;
     }

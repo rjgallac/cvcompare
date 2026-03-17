@@ -1,22 +1,20 @@
-package com.example.backend2.model;
+package com.example.backend2.message;
 
 import java.io.Serializable;
 
-public class CvCompareResponseMessage implements Serializable {
+public class JobSpecResponseMessage implements Serializable {
     private static final long serialVersionUID = 1L;
     private Long jobSpecId;
-    private int score;
     private String company;
     private String salary;
     private String title;
     private String location;
 
-    public CvCompareResponseMessage() {
+    public JobSpecResponseMessage() {
     }
 
-    public CvCompareResponseMessage(Long jobSpecId, int score, String company, String salary, String title, String location) {
+    public JobSpecResponseMessage(Long jobSpecId, String company, String salary, String title, String location) {
         this.jobSpecId = jobSpecId;
-        this.score = score;
         this.company = company;
         this.salary = salary;
         this.title = title;
@@ -29,12 +27,7 @@ public class CvCompareResponseMessage implements Serializable {
     public void setJobSpecId(Long jobSpecId) {
         this.jobSpecId = jobSpecId;
     }
-    public int getScore() {
-        return score;
-    }
-    public void setScore(int score) {
-        this.score = score;
-    }
+
     public String getCompany() {
 
         return company;

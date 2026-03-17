@@ -27,8 +27,9 @@ public class CvCompare {
     @Column(columnDefinition="TEXT")
     private String compareContent;
 
-    private String score;
+    private int score;
 
+    private String status;
 
     // Getters and setters
     public Long getId() {
@@ -55,12 +56,19 @@ public class CvCompare {
     public void setCompareContent(String compareContent) {
         this.compareContent = compareContent;
     }
-    public String getScore() {
+    public int getScore() {
         return score;
     }
-    public void setScore(String score) {
+    public void setScore(int score) {
         this.score = score;
     }
+    public String getStatus() {
+        return status;
+    }
+    public void setStatus(String status) {
+        this.status = status;
+    }
+    
     
 
 }

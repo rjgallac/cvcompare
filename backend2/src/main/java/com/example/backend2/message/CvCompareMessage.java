@@ -1,6 +1,6 @@
-package com.example.backend1.message;
+package com.example.backend2.message;
 
-public class CvCompareMessage  implements java.io.Serializable {
+public class CvCompareMessage implements java.io.Serializable{
     private static final long serialVersionUID = 1L;
     private Long cvCompareId;
     private String cvContent;

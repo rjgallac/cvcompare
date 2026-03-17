@@ -11,24 +11,35 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMQConfig {
+
     @Bean
-    public Queue queue() {
-        return new Queue("queue-name", false);
+    public Queue cvQueue() {
+        return new Queue(QueueVars.CV_QUEUE, false);
     }
 
     @Bean
-    public Queue cvSuggestQueue() {
-        return new Queue("cv-suggest-queue", false);
+    public Queue cvResponseQueue() {
+        return new Queue(QueueVars.CV_RESPONSE_QUEUE, false);
     }
 
     @Bean
-    public Queue statusQueue() {
-        return new Queue("status-queue", false);
+    public Queue jobSpecQueue() {
+        return new Queue(QueueVars.JOBSPEC_QUEUE, false);
     }
 
     @Bean
-    public Queue suggestResponseQueue() {
-        return new Queue("suggest-response-queue", false);
+    public Queue jobSpecResponseQueue() {
+        return new Queue(QueueVars.JOBSPEC_RESPONSE_QUEUE, false);
+    }
+
+    @Bean
+    public Queue cvCompareQueue() {
+        return new Queue(QueueVars.CV_COMPARE_QUEUE, false);
+    }
+
+    @Bean
+    public Queue cvCompareResponseQueue() {
+        return new Queue(QueueVars.CV_COMPARE_RESPONSE_QUEUE, false);
     }
 
     @Bean
@@ -37,24 +48,35 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public Binding binding(Queue queue, DirectExchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with("routing-key");
+    public Binding cvQueueBinding(Queue cvQueue, DirectExchange exchange) {
+        return BindingBuilder.bind(cvQueue).to(exchange).with("cv-routing-key");
         
     }
 
     @Bean
-    public Binding cvSuggestBinding(Queue cvSuggestQueue, DirectExchange exchange) {
-        return BindingBuilder.bind(cvSuggestQueue).to(exchange).with("cv-suggest-routing-key");
+    public Binding cvResponseQueueBinding(Queue cvResponseQueue, DirectExchange exchange) {
+        return BindingBuilder.bind(cvResponseQueue).to(exchange).with("cv-response-routing-key");
     }
 
     @Bean
-    public Binding statusBinding(Queue statusQueue, DirectExchange exchange) {
-        return BindingBuilder.bind(statusQueue).to(exchange).with("status-routing-key");
+    public Binding jobSpecQueueBinding(Queue jobSpecQueue, DirectExchange exchange) {
+        return BindingBuilder.bind(jobSpecQueue).to(exchange).with("jobspec-routing-key");
     }
 
     @Bean
-    public Binding statusQueueBinding(Queue suggestResponseQueue, DirectExchange exchange) {
-        return BindingBuilder.bind(suggestResponseQueue).to(exchange).with("suggest-response-routing-key");
+    public Binding jobspecResponseBinding(Queue jobSpecResponseQueue, DirectExchange exchange) {
+        return BindingBuilder.bind(jobSpecResponseQueue).to(exchange).with("jobspec-response-routing-key");
+    }
+
+    
+    @Bean
+    public Binding cvCompareQueueBinding(Queue cvCompareQueue, DirectExchange exchange) {
+        return BindingBuilder.bind(cvCompareQueue).to(exchange).with("jobspec-routing-key");
+    }
+
+    @Bean
+    public Binding cvCompareResponseBinding(Queue cvCompareResponseQueue, DirectExchange exchange) {
+        return BindingBuilder.bind(cvCompareResponseQueue).to(exchange).with("jobspec-response-routing-key");
     }
 
     @Bean

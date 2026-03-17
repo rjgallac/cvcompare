@@ -1,6 +1,6 @@
-package com.example.backend1.message;
+package com.example.backend2.message;
 
-public class CvCompareResponseMessage implements java.io.Serializable {
+public class CvCompareResponseMessage  implements java.io.Serializable{
     private static final long serialVersionUID = 1L;
     private Long cvCompareId;
     private int score;
@@ -9,8 +9,8 @@ public class CvCompareResponseMessage implements java.io.Serializable {
     public CvCompareResponseMessage() {
     }
 
-
     
+
     public CvCompareResponseMessage(Long cvCompareId, int score, String compareContent) {
         this.cvCompareId = cvCompareId;
         this.score = score;

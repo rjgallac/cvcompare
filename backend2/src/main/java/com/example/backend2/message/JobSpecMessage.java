@@ -1,16 +1,16 @@
-package com.example.backend2.model;
+package com.example.backend2.message;
 
-public class CvCompareMessage implements java.io.Serializable {
+public class JobSpecMessage implements java.io.Serializable {
     private static final long serialVersionUID = 1L;
     private Long jobSpecId;
     private String cvContent;
     private String jobSpecContent;
 
 
-    public CvCompareMessage() {
+    public JobSpecMessage() {
     }
 
-    public CvCompareMessage(String cvContent, String jobSpecContent, Long jobSpecId) {
+    public JobSpecMessage(String cvContent, String jobSpecContent, Long jobSpecId) {
         this.cvContent = cvContent;
         this.jobSpecContent = jobSpecContent;
         this.jobSpecId = jobSpecId;

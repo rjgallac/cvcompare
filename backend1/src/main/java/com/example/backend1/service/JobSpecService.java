@@ -5,7 +5,8 @@ import java.util.List;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
-import com.example.backend1.message.CvCompareMessage;
+import com.example.backend1.config.QueueVars;
+import com.example.backend1.message.JobSpecMessage;
 import com.example.backend1.model.CurriculumVitae;
 import com.example.backend1.model.JobSpec;
 import com.example.backend1.repository.CvRepository;
@@ -34,14 +35,14 @@ public class JobSpecService {
         JobSpec savedJobSpec = jobSpecRepository.save(jobSpec);
 
 
-        CvCompareMessage cvCompareMessage = new CvCompareMessage();
-        cvCompareMessage.setJobSpecId(savedJobSpec.getId());
-        cvCompareMessage.setJobSpecContent(savedJobSpec.getJobSpecContent());
+        JobSpecMessage jobSpecMessage = new JobSpecMessage();
+        jobSpecMessage.setJobSpecId(savedJobSpec.getId());
+        jobSpecMessage.setJobSpecContent(savedJobSpec.getJobSpecContent());
         // cvCompareMessage.setCvContent(cv.getCurriculum_vitae_content());
         
 
         // send CV and JobSpec to RabbitMQ
-        rabbitTemplate.convertAndSend("queue-name", cvCompareMessage);
+        rabbitTemplate.convertAndSend(QueueVars.JOBSPEC_QUEUE, jobSpecMessage);
         // logger.info("Product added: " + product.getName() + " with price: " + product.getPrice() + " and status: " + product.getStatus());
 
     }
