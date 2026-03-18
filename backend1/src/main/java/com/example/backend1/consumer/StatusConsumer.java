@@ -45,7 +45,7 @@ public class StatusConsumer {
         curriculumVitae.setCurriculum_vitae_content_suggestions(cvSuggestResponseMessage.getSuggestions());
         curriculumVitae.setStatus("complete");
         cvRepository.save(curriculumVitae);
-        messagingTemplate.convertAndSend("/topic/cv", curriculumVitae);
+        messagingTemplate.convertAndSend("/topic/cv", cvSuggestResponseMessage);
 
     }
 

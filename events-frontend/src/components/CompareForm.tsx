@@ -6,7 +6,13 @@ interface Cv {
   name: string;
 }
 
-export function CompareForm() {
+interface CompareFormProps {
+  setActiveTab: (
+    tab: 'cv' | 'job-spec' | 'compare-form' | 'compare-list',
+  ) => void;
+}
+
+export function CompareForm({ setActiveTab }: CompareFormProps) {
   const [cvs, setCvs] = useState<Cv[]>([]);
   const [jobSpecs, setJobSpecs] = useState<Array<{ id: number; name: string }>>(
     [],
@@ -50,6 +56,7 @@ export function CompareForm() {
       toast.success('Comparison submitted successfully!');
       setSelectedCvId('');
       setSelectedJobSpecId('');
+      setActiveTab('compare-list');
     } catch (error) {
       toast.error('Error submitting comparison');
     } finally {

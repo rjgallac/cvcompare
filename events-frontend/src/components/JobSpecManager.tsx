@@ -37,17 +37,23 @@ export function JobSpecManager() {
 
     stompClient.onConnect = (frame: any) => {
       console.log('Connected to WebSocket:', frame);
-      const subscription: StompSubscription = stompClient.subscribe(
-        '/topic/jobspec',
-        (message: any) => {
-          try {
-            const statusMessage: any = JSON.parse(message.body);
-            updateJobSpecInList(statusMessage);
-          } catch (error) {
-            console.error('Error parsing WebSocket message:', error);
-          }
-        },
-      );
+      stompClient.subscribe('/topic/jobspec', (message: any) => {
+        try {
+          const statusMessage: any = JSON.parse(message.body);
+          updateJobSpecInList(statusMessage);
+        } catch (error) {
+          console.error('Error parsing WebSocket message:', error);
+        }
+      });
+
+      stompClient.subscribe('/topic/cv', (message: any) => {
+        try {
+          const statusMessage: any = JSON.parse(message.body);
+          updateCVInList(statusMessage);
+        } catch (error) {
+          console.error('Error parsing WebSocket message:', error);
+        }
+      });
     };
 
     stompClient.onStompError = (frame: any) => {
@@ -72,9 +78,12 @@ export function JobSpecManager() {
             location: statusMessage.location,
             jobTitle: statusMessage.title,
             company: statusMessage.company,
-            salary: statusMessage.salary
-              ? parseInt(statusMessage.salary)
-              : null,
+            salary:
+              statusMessage.salary != null && statusMessage.salary !== ''
+                ? typeof statusMessage.salary === 'string'
+                  ? parseInt(statusMessage.salary, 10)
+                  : statusMessage.salary
+                : null,
             status: 'completed',
           };
         }
@@ -84,6 +93,21 @@ export function JobSpecManager() {
 
     setSubmittingJobSpecIds((prev) =>
       prev.filter((id) => id !== statusMessage.jobSpecId),
+    );
+  };
+
+  const updateCVInList = (statusMessage: any) => {
+    toast.success(`CV ${statusMessage.cvId || statusMessage.id} updated`, {
+      autoClose: 3000,
+    });
+
+    setCvs((prevCvs) =>
+      prevCvs.map((cv) => {
+        if (cv.id === statusMessage.cvId || cv.id === statusMessage.id) {
+          return { ...cv };
+        }
+        return cv;
+      }),
     );
   };
 

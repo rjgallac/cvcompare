@@ -69,6 +69,9 @@ public class CvCompareService {
             itemDto.setId(cvCompare.getId());
             itemDto.setCvName(cvCompare.getCurriculumVitae().getName());
             itemDto.setJobSpecName(cvCompare.getJobSpec().getName());
+            itemDto.setCompareContent(cvCompare.getCompareContent());
+            itemDto.setScore(cvCompare.getScore());
+            itemDto.setStatus(cvCompare.getStatus());
             compareCvListItemDtos.add(itemDto);
         }
         return compareCvListItemDtos;

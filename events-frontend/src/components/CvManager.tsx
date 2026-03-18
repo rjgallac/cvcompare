@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Client, StompSubscription } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 import { CvForm } from './CvForm';
 import { CvList } from './CvList';
 import { CvModal } from './CvModal';
 import { SuggestionModal } from './SuggestionModal';
 import { Cv } from '../types/Cv';
+import { toast } from 'react-toastify';
 
 export function CvManager() {
   const [view, setView] = useState<'form' | 'list'>('form');
@@ -11,10 +14,67 @@ export function CvManager() {
   const [selectedCv, setSelectedCv] = useState<Cv | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [showSuggestionModal, setShowSuggestionModal] = useState(false);
+  const [submittingCvIds, setSubmittingCvIds] = useState<number[]>([]);
+  const stompClientRef = useRef<Client | null>(null);
 
   useEffect(() => {
     fetchCvs();
+    connectWebSocket();
+    return () => {
+      if (stompClientRef.current) {
+        stompClientRef.current.deactivate();
+      }
+    };
   }, []);
+
+  const connectWebSocket = () => {
+    const stompClient: Client = new Client({
+      webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
+      reconnectDelay: 5000,
+    });
+
+    stompClient.onConnect = (frame: any) => {
+      console.log('Connected to WebSocket:', frame);
+      stompClient.subscribe('/topic/cv', (message: any) => {
+        try {
+          const statusMessage: any = JSON.parse(message.body);
+          updateCVInList(statusMessage);
+        } catch (error) {
+          console.error('Error parsing WebSocket message:', error);
+        }
+      });
+    };
+
+    stompClient.onStompError = (frame: any) => {
+      console.error('WebSocket connection error:', frame);
+    };
+
+    stompClient.activate();
+    stompClientRef.current = stompClient;
+  };
+
+  const updateCVInList = (statusMessage: any) => {
+    toast.success(`CV ${statusMessage.cvId || statusMessage.id} updated`, {
+      autoClose: 3000,
+    });
+
+    setCvs((prevCvs) =>
+      prevCvs.map((cv) => {
+        if (cv.id === statusMessage.cvId || cv.id === statusMessage.id) {
+          return {
+            ...cv,
+            curriculum_vitae_content_suggestions: statusMessage.suggestions,
+            status: 'completed',
+          };
+        }
+        return cv;
+      }),
+    );
+
+    setSubmittingCvIds((prev) =>
+      prev.filter((id) => id !== statusMessage.cvId),
+    );
+  };
 
   const fetchCvs = async () => {
     try {
@@ -39,13 +99,34 @@ export function CvManager() {
       });
 
       if (response.ok) {
-        fetchCvs();
+        let parsedSuccessfully = false;
+        try {
+          const data = await response.json();
+          if (data && data.id) {
+            setSubmittingCvIds((prev) => [...prev, data.id]);
+            parsedSuccessfully = true;
+          } else {
+            console.log('Response received but no ID:', data);
+          }
+        } catch (parseError) {
+          console.log('Response not JSON, refreshing list');
+          const tempId = Date.now();
+          setSubmittingCvIds((prev) => [...prev, tempId]);
+
+          setTimeout(() => {
+            fetchCvs();
+          }, 500);
+        }
+
+        if (parsedSuccessfully) {
+          fetchCvs();
+        }
       } else {
-        throw new Error('Failed to submit CV');
+        toast.error('Failed to submit CV');
       }
     } catch (error) {
       console.error('Submission error:', error);
-      throw error;
+      toast.error('Error connecting to backend');
     }
   };
 
@@ -142,6 +223,7 @@ export function CvManager() {
       ) : (
         <CvList
           cvs={cvs}
+          submittingIds={submittingCvIds}
           onView={handleViewClick}
           onDelete={handleDeleteCv}
           onSuggest={handleSuggestCv}

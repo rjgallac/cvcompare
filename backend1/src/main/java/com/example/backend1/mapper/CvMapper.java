@@ -1,8 +1,11 @@
 package com.example.backend1.mapper;
 
+import org.springframework.stereotype.Component;
+
 import com.example.backend1.dto.CvDto;
 import com.example.backend1.model.CurriculumVitae;
 
+@Component
 public class CvMapper {
 
     public CurriculumVitae toEntity(CvDto cvDto) {

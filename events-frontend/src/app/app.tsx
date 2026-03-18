@@ -156,7 +156,9 @@ export function App() {
         <div className="max-w-3xl mx-auto">
           {activeTab === 'cv' && <CvManager />}
           {activeTab === 'job-spec' && <JobSpecManager />}
-          {activeTab === 'compare-form' && <CompareForm />}
+          {activeTab === 'compare-form' && (
+            <CompareForm setActiveTab={setActiveTab} />
+          )}
           {activeTab === 'compare-list' && <CompareList />}
         </div>
       </div>
