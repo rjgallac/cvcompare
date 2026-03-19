@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import { Client, StompSubscription } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 import { toast } from 'react-toastify';
 
 interface CompareItem {
@@ -36,7 +38,7 @@ export function CompareList() {
   const [compares, setCompares] = useState<CompareItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewingContent, setViewingContent] = useState<string | null>(null);
-  let ws: WebSocket | null = null;
+  const stompClientRef = useRef<Client | null>(null);
 
   useEffect(() => {
     fetch('http://localhost:8080/api/compare')
@@ -55,48 +57,87 @@ export function CompareList() {
         setLoading(false);
       });
 
-    ws = new WebSocket('ws://localhost:8080/api/compare/ws');
+    connectWebSocket();
+  }, []);
 
-    ws.onmessage = (event) => {
+  const connectWebSocket = () => {
+    const stompClient: Client = new Client({
+      webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
+      reconnectDelay: 5000,
+    });
+
+    stompClient.onConnect = () => {
+      console.log('Connected to WebSocket');
       try {
-        const message = JSON.parse(event.data);
-        if (message.type === 'status') {
-          setCompares((prev) =>
-            prev.map((c) =>
-              c.id === message.id ? { ...c, status: message.status } : c,
-            ),
-          );
-        } else if (message.type === 'complete' && message.content) {
-          setCompares((prev) =>
-            prev.map((c) =>
-              c.id === message.id
-                ? { ...c, status: 'completed', compareContent: message.content }
-                : c,
-            ),
-          );
-        } else if (message.type === 'complete' && !message.content) {
-          setCompares((prev) =>
-            prev.map((c) =>
-              c.id === message.id ? { ...c, status: 'completed' } : c,
-            ),
-          );
-        }
+        stompClient.subscribe('/topic/cvcompare', (message) => {
+          console.log('Raw message:', message);
+          try {
+            const statusMessage: any = JSON.parse(message.body);
+            updateCompareInList(statusMessage);
+          } catch (error) {
+            console.error(
+              'Error parsing WebSocket message:',
+              error,
+              'Body:',
+              message.body,
+            );
+          }
+        });
       } catch (err) {
-        console.error('Error parsing websocket message:', err);
+        console.error('Subscribe error:', err);
       }
     };
 
-    ws.onclose = () => {
-      console.log('WebSocket disconnected');
+    stompClient.onStompError = (frame: any) => {
+      console.error('WebSocket connection error:', frame);
     };
 
-    ws.onerror = (err) => {
-      console.error('WebSocket error:', err);
-    };
+    stompClient.activate();
+    stompClientRef.current = stompClient;
+  };
 
+  const updateCompareInList = (statusMessage: any) => {
+    console.log('WebSocket message received:', statusMessage);
+
+    if (!statusMessage.id) return;
+
+    setCompares((prev) =>
+      prev.map((c) => {
+        if (c.id === statusMessage.id) {
+          return {
+            ...c,
+            status: 'completed',
+            compareContent: statusMessage.compareContent || c.compareContent,
+          };
+        }
+        return c;
+      }),
+    );
+
+    const existing = compares.find((c) => c.id === statusMessage.id);
+    if (!existing && (statusMessage.cvName || statusMessage.cv_name)) {
+      setCompares((prev) => [
+        ...prev,
+        {
+          id: statusMessage.id,
+          cvName: statusMessage.cvName || statusMessage.cv_name,
+          jobSpecName: statusMessage.jobSpecName || statusMessage.job_spec_name,
+          status: 'completed',
+          compareContent:
+            statusMessage.compareContent || statusMessage.compare_content,
+        },
+      ]);
+    }
+
+    toast.success(`Comparison ${statusMessage.id} completed`, {
+      autoClose: 3000,
+    });
+  };
+
+  useEffect(() => {
     return () => {
-      if (ws) {
-        ws.close();
+      if (stompClientRef.current) {
+        stompClientRef.current.deactivate();
       }
     };
   }, []);
