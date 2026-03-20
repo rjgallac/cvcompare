@@ -30,3 +30,5 @@ docker run -d --hostname rabbitmq --name cv-compare-rabbitmq -p 5672:5672 -p 156
 guest/guest
 
 http://127.0.0.1:15672/
+
+![screengrab](/docs/comparecv.gif)
